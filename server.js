@@ -1,25 +1,50 @@
 var express = require('express'),
     cidrMatcher = require('cidr_match'),
-    packageManifest = require('./package.json');
+    packageManifest = require('./package.json'),
+    config = require('./config');
 
 var app = express();
 
 app.set('port', process.env.PORT || 2001);
 
-var SUPER_ADMIN_IP_ADDRESS_RANGE = '31.221.0.0/16';
+app.get('/', function (request, response) {
+  var userInfo = getUserInfo(request);
 
-app.get('/', function (request, res) {
-  var ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress;
+  var message = '';
 
-  var userIsSuperAdmin = cidrMatcher.cidr_match(ip, SUPER_ADMIN_IP_ADDRESS_RANGE);
-
-  if (userIsSuperAdmin) {
-    res.send('Hello Super Admin! Running server version: ' + packageManifest.version);
-  } else {
-    res.send('Hello World!');
+  if (userInfo.features.holdingPage) {
+    message += 'Hello ' + userInfo.groupName + '!';
   }
+
+  if (userInfo.features.serverVersionInfo) {
+    message += ' Running server version: ' + packageManifest.version;
+  }
+
+  response.send(message);
 });
 
 app.listen(app.get('port'), function() {
   console.log('Server is up and running on port:', app.get('port'));
 });
+
+function getUserInfo (request) {
+  var ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress;
+
+  var result = {
+    features: {}
+  };
+
+  config.userGroups.forEach(function (group) {
+    if (cidrMatcher.cidr_match(ip, group.ipRange)) {
+      // Set group name only if it's not already set
+      // I.e. usergroups higher in the config file take precedence
+      result.groupName = result.groupName || group.name;
+
+      group.featuresEnabled.forEach(function (featureName) {
+        result.features[featureName] = true;
+      });
+    }
+  });
+
+  return result;
+}
