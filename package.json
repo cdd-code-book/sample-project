@@ -1,12 +1,13 @@
 {
   "name": "sample-project",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Sample node.js app",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "cidr_match": "0.0.7",
     "express": "4.12.2"
   },
   "engines": {
