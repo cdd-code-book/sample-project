@@ -35,7 +35,7 @@ function getUserInfo (request) {
   };
 
   config.userGroups.forEach(function (group) {
-    if (cidrMatcher.cidr_match(ip, group.ipRange)) {
+    if (isIpInAnyRange(ip, group.ipRanges)) {
       // Set group name only if it's not already set
       // I.e. usergroups higher in the config file take precedence
       result.groupName = result.groupName || group.name;
@@ -47,4 +47,11 @@ function getUserInfo (request) {
   });
 
   return result;
+}
+
+function isIpInAnyRange (ip, ipRanges) {
+  // Returns true if there exists some (any) range that matches the IP
+  return ipRanges.some(function (range) {
+    return cidrMatcher.cidr_match(ip, range);
+  });
 }

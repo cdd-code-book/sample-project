@@ -2,21 +2,19 @@
   "userGroups": [
     {
       "name": "Super Admin",
-      "ipRange": "31.221.0.0/16",
-      "featuresEnabled": [
-        "serverVersionInfo"
-      ]
-    },
-    {
-      "name": "Localhost Admin",
-      "ipRange": "127.0.0.1/32",
+      "ipRanges": [
+        "31.221.0.0/16",
+        "127.0.0.1/32"
+      ],
       "featuresEnabled": [
         "serverVersionInfo"
       ]
     },
     {
       "name": "World + Dog",
-      "ipRange": "0.0.0.0/0",
+      "ipRanges": [
+        "0.0.0.0/0"
+      ],
       "featuresEnabled": [
         "holdingPage"
       ]
