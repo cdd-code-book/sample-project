@@ -1,1 +1,3 @@
 node_modules
+output-virtualbox-iso
+packer_cache
