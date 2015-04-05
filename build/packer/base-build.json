@@ -1,0 +1,54 @@
+{
+  "variables": {
+    "ssh_user": "cdd",
+    "ssh_pass": "cdd",
+    "base_vm_name": "cdd-base-vm",
+    "bridge_interface": "en1: Wi-Fi (AirPort)",
+    "locale": "en_US",
+    "keyboard_layout": "USA"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "vm_name": "{{user `base_vm_name`}}",
+      "output_directory": "output-{{user `base_vm_name`}}",
+      "guest_os_type": "Ubuntu_64",
+      "iso_url": "http://releases.ubuntu.com/12.04/ubuntu-12.04.5-server-amd64.iso",
+      "http_directory": "scripts/base",
+      "iso_checksum": "769474248a3897f4865817446f9a4a53",
+      "iso_checksum_type": "md5",
+      "ssh_username": "{{user `ssh_user`}}",
+      "ssh_password": "{{user `ssh_pass`}}",
+      "ssh_wait_timeout": "20m",
+      "shutdown_command": "echo '{{user `ssh_pass`}}' | sudo -S shutdown -P now",
+      "disk_size": 3000,
+      "headless": false,
+      "boot_wait": "5s",
+      "boot_command": [
+        "<esc><esc><enter><wait>",
+        "/install/vmlinuz noapic ",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+        "debian-installer={{user `locale`}} auto locale={{user `locale`}} kbd-chooser/method=us ",
+        "hostname={{user `base_vm_name`}} ",
+        "fb=false debconf/frontend=noninteractive ",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout={{user `keyboard_layout`}} ",
+        "keyboard-configuration/variant={{user `keyboard_layout`}} console-setup/ask_detect=false ",
+        "initrd=/install/initrd.gz -- <enter>"
+      ],
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "1024"],
+        ["modifyvm", "{{.Name}}", "--cpus", "2"]
+      ],
+      "vboxmanage_post": [
+        ["modifyvm", "{{.Name}}", "--nic1", "bridged", "--bridgeadapter1", "{{user `bridge_interface`}}"]
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+        "type": "shell",
+        "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+        "script": "scripts/base/configure-networking.sh"
+    }
+  ]
+}

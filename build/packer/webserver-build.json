@@ -1,0 +1,62 @@
+{
+  "variables": {
+    "ssh_user": "cdd",
+    "ssh_pass": "cdd",
+    "base_path": "{{pwd}}/../..",
+    "source_code_dir": "webserver",
+    "vm_server_path": "/srv/cdd/webserver",
+    "base_vm_name": "cdd-base-vm",
+    "web_vm_name": "cdd-web-vm",
+    "bridge_interface": "en1: Wi-Fi (AirPort)"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "vm_name": "{{user `web_vm_name`}}",
+      "output_directory": "output-{{user `web_vm_name`}}",
+      "source_path": "output-{{user `base_vm_name`}}/{{user `base_vm_name`}}.ovf",
+      "ssh_username": "{{user `ssh_user`}}",
+      "ssh_password": "{{user `ssh_pass`}}",
+      "ssh_wait_timeout": "2m",
+      "shutdown_command": "echo '{{user `ssh_pass`}}' | sudo -S shutdown -P now",
+      "headless": false,
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--nic1", "nat"]
+      ],
+      "vboxmanage_post": [
+        ["modifyvm", "{{.Name}}", "--nic1", "bridged", "--bridgeadapter1", "{{user `bridge_interface`}}"]
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "{{user `base_path`}}/{{user `source_code_dir`}}",
+      "destination": "/tmp"
+    },
+    {
+      "type": "file",
+      "source": "scripts/webserver/cdd-webserver.conf",
+      "destination": "/tmp/cdd-webserver.conf"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "SERVER_OWNER={{user `ssh_user`}}",
+        "TEMP_SERVER_PATH=/tmp/{{user `source_code_dir`}}",
+        "SERVER_PATH={{user `vm_server_path`}}"
+      ],
+      "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+      "script": "scripts/webserver/install-server.sh"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "OLD_HOSTNAME={{user `base_vm_name`}}",
+        "NEW_HOSTNAME={{user `web_vm_name`}}"
+      ],
+      "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+      "script": "scripts/change-hostname.sh"
+    }
+  ]
+}
