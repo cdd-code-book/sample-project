@@ -1,5 +1,5 @@
 {
-  "bridge_interface": "en1: Wi-Fi (AirPort)",
+  "bridge_interface": "eth0",
   "locale": "en_GB",
   "keyboard_layout": "UK"
 }
