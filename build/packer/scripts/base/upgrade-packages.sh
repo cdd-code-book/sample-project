@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # Fix hash sum mismatch problems that occur when performing apt-get update
 rm -r /var/lib/apt/lists/*

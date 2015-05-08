@@ -15,6 +15,7 @@
       "vm_name": "{{user `web_vm_name`}}",
       "output_directory": "output-{{user `web_vm_name`}}",
       "source_path": "output-{{user `base_vm_name`}}/{{user `base_vm_name`}}.ovf",
+      "guest_additions_mode": "disable",
       "ssh_username": "{{user `ssh_user`}}",
       "ssh_password": "{{user `ssh_pass`}}",
       "ssh_wait_timeout": "2m",
