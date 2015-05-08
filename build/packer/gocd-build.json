@@ -1,0 +1,61 @@
+{
+  "variables": {
+    "ssh_user": "cdd",
+    "ssh_pass": "cdd",
+    "base_vm_name": "cdd-base-vm",
+    "gocd_vm_name": "gocd-vm",
+    "bridge_interface": "en1: Wi-Fi (AirPort)",
+    "go_server_package": "http://dl.bintray.com/gocd/gocd-deb/go-server-14.4.0-1356.deb",
+    "go_agent_package": "http://dl.bintray.com/gocd/gocd-deb/go-agent-14.4.0-1356.deb"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "vm_name": "{{user `gocd_vm_name`}}",
+      "output_directory": "output-{{user `gocd_vm_name`}}",
+      "source_path": "output-{{user `base_vm_name`}}/{{user `base_vm_name`}}.ovf",
+      "guest_additions_mode": "disable",
+      "ssh_username": "{{user `ssh_user`}}",
+      "ssh_password": "{{user `ssh_pass`}}",
+      "ssh_wait_timeout": "2m",
+      "shutdown_command": "echo '{{user `ssh_pass`}}' | sudo -S shutdown -P now",
+      "headless": false,
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--nic1", "nat"]
+      ],
+      "vboxmanage_post": [
+        ["modifyvm", "{{.Name}}", "--nic1", "bridged", "--bridgeadapter1", "{{user `bridge_interface`}}"]
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+      "script": "scripts/gocd/install-virtualbox.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+      "script": "scripts/gocd/install-packer.sh"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "GO_SERVER_PACKAGE_URL={{user `go_server_package`}}",
+        "GO_AGENT_PACKAGE_URL={{user `go_agent_package`}}"
+      ],
+      "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+      "script": "scripts/gocd/install-go.sh"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "OLD_HOSTNAME={{user `base_vm_name`}}",
+        "NEW_HOSTNAME={{user `gocd_vm_name`}}"
+      ],
+      "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+      "script": "scripts/change-hostname.sh"
+    }
+  ]
+}
