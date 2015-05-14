@@ -12,10 +12,10 @@
       "type": "virtualbox-iso",
       "vm_name": "{{user `base_vm_name`}}",
       "output_directory": "output-{{user `base_vm_name`}}",
-      "guest_os_type": "Ubuntu_64",
-      "iso_url": "http://releases.ubuntu.com/12.04/ubuntu-12.04.5-server-amd64.iso",
+      "guest_os_type": "Ubuntu",
+      "iso_url": "http://releases.ubuntu.com/precise/ubuntu-12.04.5-server-i386.iso",
       "http_directory": "scripts/base",
-      "iso_checksum": "769474248a3897f4865817446f9a4a53",
+      "iso_checksum": "1214cd22448338b60bb24f583dd8741a",
       "iso_checksum_type": "md5",
       "guest_additions_mode": "disable",
       "ssh_username": "{{user `ssh_user`}}",
@@ -37,7 +37,7 @@
         "initrd=/install/initrd.gz -- <enter>"
       ],
       "vboxmanage": [
-        ["modifyvm", "{{.Name}}", "--memory", "1024"],
+        ["modifyvm", "{{.Name}}", "--memory", "512"],
         ["modifyvm", "{{.Name}}", "--cpus", "2"]
       ],
       "vboxmanage_post": [
