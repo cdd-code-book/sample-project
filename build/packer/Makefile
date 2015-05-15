@@ -1,6 +1,7 @@
 BASE_VM_NAME = cdd-base-vm
 BASE_OUTPUT_DIR = output-$(BASE_VM_NAME)
 BASE_MACHINE_IMAGE = $(BASE_OUTPUT_DIR)/$(BASE_VM_NAME).ovf
+BASE_VM_DISK_SIZE_MB = 12000
 
 WEB_VM_NAME = cdd-web-vm
 WEB_OUTPUT_DIR = output-$(WEB_VM_NAME)
@@ -54,8 +55,9 @@ $(WEB_MACHINE_IMAGE): $(BASE_MACHINE_IMAGE) webserver-build.json
 
 $(BASE_MACHINE_IMAGE): base-build.json
 	make clean-base-vm
-	packer build -var base_vm_name=$(BASE_VM_NAME) \
-				 -var-file base-variables.json     \
+	packer build -var base_vm_name=$(BASE_VM_NAME)         \
+				 -var disk_size_mb=$(BASE_VM_DISK_SIZE_MB) \
+				 -var-file base-variables.json             \
 				 base-build.json
 
 clean: clean-gocd-vm clean-web-vm clean-base-vm

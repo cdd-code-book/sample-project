@@ -5,7 +5,8 @@
     "base_vm_name": "cdd-base-vm",
     "bridge_interface": "en1: Wi-Fi (AirPort)",
     "locale": "en_US",
-    "keyboard_layout": "USA"
+    "keyboard_layout": "USA",
+    "disk_size_mb": 12000
   },
   "builders": [
     {
@@ -22,7 +23,7 @@
       "ssh_password": "{{user `ssh_pass`}}",
       "ssh_wait_timeout": "20m",
       "shutdown_command": "echo '{{user `ssh_pass`}}' | sudo -S shutdown -P now",
-      "disk_size": 8000,
+      "disk_size": "{{user `disk_size_mb`}}",
       "headless": true,
       "boot_wait": "5s",
       "boot_command": [
