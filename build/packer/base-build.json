@@ -20,7 +20,7 @@
       "guest_additions_mode": "disable",
       "ssh_username": "{{user `ssh_user`}}",
       "ssh_password": "{{user `ssh_pass`}}",
-      "ssh_wait_timeout": "20m",
+      "ssh_wait_timeout": "40m",
       "shutdown_command": "echo '{{user `ssh_pass`}}' | sudo -S shutdown -P now",
       "disk_size": 8000,
       "headless": true,
