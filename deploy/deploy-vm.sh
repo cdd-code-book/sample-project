@@ -16,6 +16,7 @@ fi
 set -ex
 
 # Clean if it already exists, ignore if it doesn't
+VBoxManage controlvm $VM_NAME poweroff 2> /dev/null || true
 VBoxManage unregistervm --delete $VM_NAME 2> /dev/null || true
 
 VBoxManage import $VM_DIRECTORY/$VM_NAME.ovf
