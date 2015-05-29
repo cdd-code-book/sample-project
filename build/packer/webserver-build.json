@@ -52,6 +52,11 @@
     },
     {
       "type": "shell",
+      "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+      "script": "scripts/monitoring/install-ruxit-agent.sh"
+    },
+    {
+      "type": "shell",
       "environment_vars": [
         "OLD_HOSTNAME={{user `base_vm_name`}}",
         "NEW_HOSTNAME={{user `web_vm_name`}}"
