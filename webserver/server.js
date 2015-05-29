@@ -6,21 +6,12 @@ var express = require('express'),
 var app = express();
 
 app.set('port', process.env.PORT || 2001);
+app.set('view engine', 'hbs');
 
 app.get('/', function (request, response) {
   var userInfo = getUserInfo(request);
 
-  var message = '';
-
-  if (userInfo.features.holdingPage) {
-    message += 'Hello ' + userInfo.groupName + '!';
-  }
-
-  if (userInfo.features.serverVersionInfo) {
-    message += ' Running server version: ' + packageManifest.version;
-  }
-
-  response.send(message);
+  response.render('index', { userInfo: userInfo, serverVersion: packageManifest.version });
 });
 
 app.listen(app.get('port'), function() {

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>CDD Web Server</title>
+  </head>
+  <body>
+    {{#if userInfo.features.holdingPage}}
+      <h2>Hello, {{userInfo.groupName}}!</h2>
+    {{/if}}
+
+    {{#if userInfo.features.serverVersionInfo}}
+      <p>Running server version: {{serverVersion}}</p>
+    {{/if}}
+  </body>
+</html>
