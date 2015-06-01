@@ -24,7 +24,10 @@
         ["modifyvm", "{{.Name}}", "--nic1", "nat"]
       ],
       "vboxmanage_post": [
-        ["modifyvm", "{{.Name}}", "--nic1", "bridged", "--bridgeadapter1", "{{user `bridge_interface`}}"]
+        ["modifyvm", "{{.Name}}", "--memory", "2048"],
+        ["modifyvm", "{{.Name}}", "--nic1", "bridged", "--bridgeadapter1", "{{user `bridge_interface`}}"],
+        ["modifyvm", "{{.Name}}", "--cpus", "2"],
+        ["modifyvm", "{{.Name}}", "--hwvirtex", "on"]
       ]
     }
   ],

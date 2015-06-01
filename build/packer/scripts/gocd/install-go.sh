@@ -21,3 +21,6 @@ echo "deb http://dl.bintray.com/gocd/gocd-deb/ /" >> /etc/apt/sources.list
 # Ignore Go package authentication errors - bit of a hack and not exactly secure!
 apt-get update -qq || true
 apt-get install -qq --allow-unauthenticated --force-yes go-server=14.4.0-1356 go-agent=14.4.0-1356
+
+# Add packer to the go-agent PATH
+echo 'export PATH=/usr/local/packer:$PATH' >> /etc/default/go-agent

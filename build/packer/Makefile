@@ -30,12 +30,12 @@ stop-base-vm:
 	VBoxManage controlvm $(BASE_VM_NAME) poweroff 2> /dev/null || true
 
 import-gocd-vm: $(GOCD_MACHINE_IMAGE)
+	# Import only if necessary
+	# Clean to force this
 	VBoxManage showvminfo $(GOCD_VM_NAME) > /dev/null || \
 	VBoxManage import $(GOCD_MACHINE_IMAGE)
 
 import-web-vm: $(WEB_MACHINE_IMAGE)
-	# Import only if necessary
-	# Clean to force this
 	VBoxManage showvminfo $(WEB_VM_NAME) > /dev/null || \
 	VBoxManage import $(WEB_MACHINE_IMAGE)
 
