@@ -7,7 +7,8 @@
     "vm_server_path": "/srv/cdd/webserver",
     "base_vm_name": "cdd-base-vm",
     "web_vm_name": "cdd-web-vm",
-    "bridge_interface": "en1: Wi-Fi (AirPort)"
+    "bridge_interface": "en1: Wi-Fi (AirPort)",
+    "ruxit_agent_download_uri": "{{env `RUXIT_AGENT_DOWNLOAD_URI`}}"
   },
   "builders": [
     {
@@ -52,6 +53,9 @@
     },
     {
       "type": "shell",
+      "environment_vars": [
+        "RUXIT_AGENT_DOWNLOAD_URI={{user `ruxit_agent_download_uri`}}"
+      ],
       "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
       "script": "scripts/monitoring/install-ruxit-agent.sh"
     },

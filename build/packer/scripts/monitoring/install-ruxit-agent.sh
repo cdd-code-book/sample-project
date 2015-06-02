@@ -1,11 +1,16 @@
 #!/bin/bash -e
 
+if [ -z "$RUXIT_AGENT_DOWNLOAD_URI" ] ; then
+  echo "Environment variable RUXIT_AGENT_DOWNLOAD_URI must be defined"
+  exit 1
+fi
+
 apt-get update -yqq
 apt-get install -yqq wget
 
-installer_file=ruxit-Agent-Linux-1.69.120.sh
+installer_file=ruxit-agent.sh
 
-wget -O $installer_file https://znb76824.live.ruxit.com/installer/agent/unix/latest/V4PdQR3avp0QfJ1t
+wget -O $installer_file $RUXIT_AGENT_DOWNLOAD_URI
 
 chmod +x $installer_file
 ./$installer_file
