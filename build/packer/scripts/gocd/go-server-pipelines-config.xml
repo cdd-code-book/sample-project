@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="74">
+
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" />
+
+  <pipelines group="defaultGroup">
+    <pipeline name="base-image-build">
+      <materials>
+        <git url="https://github.com/cdd-code-book/sample-project.git" branch="chapter6" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="buildVM">
+            <environmentvariables>
+              <variable name="BASE_VM_DISK_SIZE_MB">
+                <value>4000</value>
+              </variable>
+              <variable name="PACKER_LOG">
+                <value>true</value>
+              </variable>
+            </environmentvariables>
+            <tasks>
+              <exec command="make" workingdir="build/packer">
+                <arg>-e</arg>
+                <arg>output-cdd-base-vm/cdd-base-vm.ovf</arg>
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="build/packer/output-cdd-base-vm" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="web-vm-build">
+      <materials>
+        <pipeline pipelineName="base-image-build" stageName="defaultStage" />
+        <git url="https://github.com/cdd-code-book/sample-project.git" branch="chapter6" materialName="Git" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="buildVM">
+            <environmentvariables>
+              <variable name="RUXIT_AGENT_DOWNLOAD_URI">
+                <value></value>
+              </variable>
+            </environmentvariables>
+            <tasks>
+              <fetchartifact pipeline="base-image-build" stage="defaultStage" job="buildVM" srcdir="output-cdd-base-vm" dest="build/packer/">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="make" workingdir="build/packer">
+                <arg>output-cdd-web-vm/cdd-web-vm.ovf</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="build/packer/output-cdd-web-vm" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="deploy-webserver" isLocked="true">
+      <environmentvariables>
+        <variable name="VM_NAME">
+          <value>cdd-web-vm</value>
+        </variable>
+        <variable name="VM_DIRECTORY">
+          <value>output-cdd-web-vm</value>
+        </variable>
+      </environmentvariables>
+      <materials>
+        <pipeline pipelineName="web-vm-build" stageName="defaultStage" />
+        <git url="https://github.com/cdd-code-book/sample-project.git" branch="chapter6" materialName="Git" />
+      </materials>
+      <stage name="defaultStage" cleanWorkingDir="true">
+        <approval type="manual" />
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact pipeline="web-vm-build" stage="defaultStage" job="buildVM" srcdir="output-cdd-web-vm">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="deploy/deploy-vm.sh" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+
+</cruise>

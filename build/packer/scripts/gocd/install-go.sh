@@ -10,6 +10,11 @@ if [ -z "$GO_AGENT_PACKAGE_URL" ] ; then
   exit 1
 fi
 
+if [ -z "$GO_SERVER_CONFIG_FILE" ] ; then
+  echo "Environment variable GO_SERVER_CONFIG_FILE must be defined"
+  exit 1
+fi
+
 set -ex
 
 # Prerequisites
@@ -24,3 +29,7 @@ apt-get install -qq --allow-unauthenticated --force-yes go-server=14.4.0-1356 go
 
 # Add packer to the go-agent PATH
 echo 'export PATH=/usr/local/packer:$PATH' >> /etc/default/go-agent
+
+mv $GO_SERVER_CONFIG_FILE /etc/go/cruise-config.xml
+
+chown go:go /etc/go/cruise-config.xml

@@ -43,9 +43,15 @@
       "script": "scripts/gocd/install-packer.sh"
     },
     {
+      "type": "file",
+      "source": "scripts/gocd/go-server-pipelines-config.xml",
+      "destination": "/tmp/go-server-pipelines-config.xml"
+    },
+    {
       "type": "shell",
       "environment_vars": [
         "GO_SERVER_PACKAGE_URL={{user `go_server_package`}}",
+        "GO_SERVER_CONFIG_FILE=/tmp/go-server-pipelines-config.xml",
         "GO_AGENT_PACKAGE_URL={{user `go_agent_package`}}"
       ],
       "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
