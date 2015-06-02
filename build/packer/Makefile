@@ -1,7 +1,7 @@
 BASE_VM_NAME = cdd-base-vm
 BASE_OUTPUT_DIR = output-$(BASE_VM_NAME)
 BASE_MACHINE_IMAGE = $(BASE_OUTPUT_DIR)/$(BASE_VM_NAME).ovf
-BASE_VM_DISK_SIZE_MB = 12000
+BASE_VM_DISK_SIZE_MB = 15000
 
 WEB_VM_NAME = cdd-web-vm
 WEB_OUTPUT_DIR = output-$(WEB_VM_NAME)
@@ -30,12 +30,12 @@ stop-base-vm:
 	VBoxManage controlvm $(BASE_VM_NAME) poweroff 2> /dev/null || true
 
 import-gocd-vm: $(GOCD_MACHINE_IMAGE)
+	# Import only if necessary
+	# Clean to force this
 	VBoxManage showvminfo $(GOCD_VM_NAME) > /dev/null || \
 	VBoxManage import $(GOCD_MACHINE_IMAGE)
 
 import-web-vm: $(WEB_MACHINE_IMAGE)
-	# Import only if necessary
-	# Clean to force this
 	VBoxManage showvminfo $(WEB_VM_NAME) > /dev/null || \
 	VBoxManage import $(WEB_MACHINE_IMAGE)
 

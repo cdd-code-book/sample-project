@@ -6,7 +6,7 @@
     "bridge_interface": "en1: Wi-Fi (AirPort)",
     "locale": "en_US",
     "keyboard_layout": "USA",
-    "disk_size_mb": 12000
+    "disk_size_mb": 15000
   },
   "builders": [
     {
