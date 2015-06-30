@@ -47,8 +47,8 @@ app.get('/', function (request, response) {
 });
 
 app.listen(app.get('port'), function() {
-  log('Server is up and running on port: ' + app.get('port'));
-  log('Server version: ' + packageManifest.version);
+  log({ message: 'Server is up and running', port: app.get('port') });
+  log({ serverVersion: packageManifest.version });
 });
 
 function getUserInfo (request) {
