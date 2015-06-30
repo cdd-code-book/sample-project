@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
 if [ -z "$RUXIT_AGENT_DOWNLOAD_URI" ] ; then
-  echo "Environment variable RUXIT_AGENT_DOWNLOAD_URI must be defined"
-  exit 1
+  echo "Environment variable RUXIT_AGENT_DOWNLOAD_URI is not defined, skipping agent install"
+  exit 0
 fi
 
 apt-get update -yqq
