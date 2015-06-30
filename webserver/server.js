@@ -1,7 +1,8 @@
 var express = require('express'),
     cidrMatcher = require('cidr_match'),
     packageManifest = require('./package.json'),
-    config = require('./config');
+    config = require('./config'),
+    loggly = require('loggly');
 
 var app = express();
 
@@ -9,14 +10,45 @@ app.set('port', process.env.PORT || 2001);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'hbs');
 
+var logglyClient;
+
+if (process.env.LOGGLY_TOKEN && process.env.LOGGLY_SUBDOMAIN) {
+  logglyClient = loggly.createClient({
+    token: process.env.LOGGLY_TOKEN,
+    subdomain: process.env.LOGGLY_SUBDOMAIN,
+    tags: ['webserver'],
+    json: true
+  });
+} else {
+  console.warn('The following environment variables need be defined to enable uploading of logs to Loggly:',
+    'LOGGLY_TOKEN and LOGGLY_SUBDOMAIN');
+}
+
+// Log to stdout plus loggly if configured
+function log () {
+  if (!arguments) {
+    throw new Error('No arguments?!');
+  }
+
+  console.log.apply(this, arguments);
+
+  if (logglyClient) {
+    logglyClient.log.apply(logglyClient, arguments);
+  }
+}
+
 app.get('/', function (request, response) {
   var userInfo = getUserInfo(request);
+
+  log('HTTP request for /');
+  log(userInfo);
 
   response.render('index', { userInfo: userInfo, serverVersion: packageManifest.version });
 });
 
 app.listen(app.get('port'), function() {
-  console.log('Server is up and running on port:', app.get('port'));
+  log('Server is up and running on port: ' + app.get('port'));
+  log('Server version: ' + packageManifest.version);
 });
 
 function getUserInfo (request) {

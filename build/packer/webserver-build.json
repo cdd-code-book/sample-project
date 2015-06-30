@@ -8,7 +8,9 @@
     "base_vm_name": "cdd-base-vm",
     "web_vm_name": "cdd-web-vm",
     "bridge_interface": "en1: Wi-Fi (AirPort)",
-    "ruxit_agent_download_uri": "{{env `RUXIT_AGENT_DOWNLOAD_URI`}}"
+    "ruxit_agent_download_uri": "{{env `RUXIT_AGENT_DOWNLOAD_URI`}}",
+    "loggly_token": "{{env `LOGGLY_TOKEN`}}",
+    "loggly_subdomain": "{{env `LOGGLY_SUBDOMAIN`}}"
   },
   "builders": [
     {
@@ -58,6 +60,15 @@
       ],
       "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
       "script": "scripts/monitoring/install-ruxit-agent.sh"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "LOGGLY_TOKEN={{user `loggly_token`}}",
+        "LOGGLY_SUBDOMAIN={{user `loggly_subdomain`}}"
+      ],
+      "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+      "script": "scripts/webserver/create-loggly-credentials-file.sh"
     },
     {
       "type": "shell",
