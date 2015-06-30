@@ -26,10 +26,6 @@ if (process.env.LOGGLY_TOKEN && process.env.LOGGLY_SUBDOMAIN) {
 
 // Log to stdout plus loggly if configured
 function log () {
-  if (!arguments) {
-    throw new Error('No arguments?!');
-  }
-
   console.log.apply(this, arguments);
 
   if (logglyClient) {
