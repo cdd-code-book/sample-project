@@ -40,8 +40,12 @@ function log () {
 app.get('/', function (request, response) {
   var userInfo = getUserInfo(request);
 
-  log('HTTP request for /');
-  log(userInfo);
+  // Very simple request logging
+  log({
+    message: 'HTTP Request: ' + request.method + ' ' + request.url,
+    userInfo: userInfo,
+    userAgent: request.headers['user-agent']
+  });
 
   response.render('index', { userInfo: userInfo, serverVersion: packageManifest.version });
 });
@@ -55,7 +59,8 @@ function getUserInfo (request) {
   var ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress;
 
   var result = {
-    features: {}
+    features: {},
+    ip: ip
   };
 
   config.userGroups.forEach(function (group) {
