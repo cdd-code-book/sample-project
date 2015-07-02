@@ -10,7 +10,8 @@
     "bridge_interface": "en1: Wi-Fi (AirPort)",
     "ruxit_agent_download_uri": "{{env `RUXIT_AGENT_DOWNLOAD_URI`}}",
     "loggly_token": "{{env `LOGGLY_TOKEN`}}",
-    "loggly_subdomain": "{{env `LOGGLY_SUBDOMAIN`}}"
+    "loggly_subdomain": "{{env `LOGGLY_SUBDOMAIN`}}",
+    "datadog_api_key": "{{env `DD_API_KEY`}}"
   },
   "builders": [
     {
@@ -69,6 +70,14 @@
       ],
       "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
       "script": "scripts/webserver/create-loggly-credentials-file.sh"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "DD_API_KEY={{user `datadog_api_key`}}"
+      ],
+      "execute_command": "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E '{{ .Path }}'",
+      "script": "scripts/monitoring/install-datadog-agent.sh"
     },
     {
       "type": "shell",
