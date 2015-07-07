@@ -5,6 +5,8 @@ if [ -z "$DD_API_KEY" ] ; then
   exit 0
 fi
 
+set -ex
+
 apt-get update -yqq
 apt-get install -yqq curl
 
