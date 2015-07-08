@@ -2,9 +2,11 @@ var express = require('express'),
     cidrMatcher = require('cidr_match'),
     packageManifest = require('./package.json'),
     config = require('./config'),
-    loggly = require('loggly');
+    loggly = require('loggly'),
+    StatsD = require('node-dogstatsd').StatsD;
 
-var app = express();
+var app = express(),
+    dogstatsd = new StatsD();
 
 app.set('port', process.env.PORT || 2001);
 app.set('views', __dirname + '/views');
@@ -42,6 +44,8 @@ app.get('/', function (request, response) {
     userInfo: userInfo,
     userAgent: request.headers['user-agent']
   });
+
+  dogstatsd.increment('page.views');
 
   response.render('index', { userInfo: userInfo, serverVersion: packageManifest.version });
 });
